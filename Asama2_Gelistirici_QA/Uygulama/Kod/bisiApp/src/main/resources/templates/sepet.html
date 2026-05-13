@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepet</title>
+    <style>
+        body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f3f5f7; color: #172026; }
+        .kapsayici { max-width: 1180px; margin: 0 auto; padding: 28px; }
+        .duzen { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
+        .panel { background: white; border-radius: 20px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08); padding: 22px; }
+        .satir { display: grid; grid-template-columns: 140px 1fr auto; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid #eef2f6; }
+        .satir:last-child { border-bottom: 0; }
+        img { width: 140px; height: 100px; object-fit: cover; border-radius: 12px; background: #d9dee4; }
+        .dugme, button { border: 0; border-radius: 10px; padding: 11px 15px; font-weight: 700; cursor: pointer; background: #1d8f5a; color: white; }
+        .ikincil { background: #ecf1f4; color: #172026; }
+        .ozet-satir { display: flex; justify-content: space-between; margin-bottom: 14px; color: #51606d; }
+        .buyuk { font-size: 24px; color: #172026; font-weight: 800; }
+        form { margin: 0; }
+        .bos { color: #637381; }
+        @media (max-width: 900px) { .duzen { grid-template-columns: 1fr; } .satir { grid-template-columns: 1fr; } img { width: 100%; height: 220px; } }
+    </style>
+</head>
+<body>
+<div class="kapsayici">
+    <p><a th:href="@{/}" style="color:#1d8f5a;">Ana sayfaya dön</a></p>
+    <div class="duzen">
+        <section class="panel">
+            <h1>Sepetim</h1>
+            <p th:if="${param.tamamlandi}" style="color:#1d8f5a;">Satın alma işlemi tamamlandı.</p>
+            <div th:if="${#lists.isEmpty(sepetIlanlari)}" class="bos">Sepetiniz şu an boş.</div>
+            <div th:if="${!#lists.isEmpty(sepetIlanlari)}">
+                <div class="satir" th:each="ilan : ${sepetIlanlari}">
+                    <img th:src="${ilan.resimUrl != null ? ilan.resimUrl : 'https://placehold.co/400x300?text=Bisiklet'}" alt="Bisiklet">
+                    <div>
+                        <h3 style="margin:0 0 8px;" th:text="${ilan.baslik}">Başlık</h3>
+                        <p style="margin:0 0 6px; color:#637381;" th:text="${ilan.marka + ' | ' + ilan.modelYili + ' | ' + ilan.durum}">Detay</p>
+                        <a th:href="@{/ilanlar/{id}(id=${ilan.id})}" style="color:#1d8f5a;">Detaya git</a>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:24px; font-weight:800; margin-bottom:10px;"><span th:text="${#numbers.formatDecimal(ilan.fiyat, 1, 'POINT', 0, 'COMMA')}">0</span> TL</div>
+                        <form th:action="@{/sepet/kaldir/{ilanId}(ilanId=${ilan.id})}" method="post">
+                            <button type="submit" class="ikincil">Sepetten Kaldır</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel">
+            <h2>Sipariş Özeti</h2>
+            <div class="ozet-satir"><span>Ara toplam</span><strong th:text="${#numbers.formatDecimal(toplam, 1, 'POINT', 0, 'COMMA') + ' TL'}">0 TL</strong></div>
+            <div class="ozet-satir"><span>Hizmet bedeli</span><strong th:text="${#numbers.formatDecimal(hizmetBedeli, 1, 'POINT', 0, 'COMMA') + ' TL'}">0 TL</strong></div>
+            <div class="ozet-satir buyuk"><span>Genel toplam</span><span th:text="${#numbers.formatDecimal(genelToplam, 1, 'POINT', 0, 'COMMA') + ' TL'}">0 TL</span></div>
+            <form th:if="${!#lists.isEmpty(sepetIlanlari)}" th:action="@{/sepet/satin-al}" method="post">
+                <button type="submit" style="width:100%; margin-top:12px;">Satın Al</button>
+            </form>
+        </aside>
+    </div>
+</div>
+</body>
+</html>

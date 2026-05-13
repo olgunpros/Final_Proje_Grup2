@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BisiPazar</title>
+    <style>
+        :root {
+            --arka: #f3f5f7;
+            --panel: #ffffff;
+            --panel-2: #e8eef2;
+            --yazi: #172026;
+            --soluk: #637381;
+            --kenar: #d6dde3;
+            --vurgu: #1d8f5a;
+            --vurgu-2: #146c43;
+            --golge: 0 18px 45px rgba(15, 23, 42, 0.08);
+        }
+        body.koyu {
+            --arka: #0f1418;
+            --panel: #182028;
+            --panel-2: #212b35;
+            --yazi: #edf2f7;
+            --soluk: #94a3b8;
+            --kenar: #2d3748;
+            --vurgu: #3ecf8e;
+            --vurgu-2: #23a36b;
+            --golge: 0 18px 45px rgba(0, 0, 0, 0.28);
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Inter, Arial, sans-serif; background: var(--arka); color: var(--yazi); transition: background .2s ease, color .2s ease; }
+        a { color: inherit; text-decoration: none; }
+        .kapsayici { max-width: 1320px; margin: 0 auto; padding: 24px; }
+        .hero { background: linear-gradient(135deg, #0f172a 0%, #1d8f5a 100%); color: #fff; border-radius: 18px; padding: 28px; box-shadow: var(--golge); }
+        .hero-ust { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+        .marka { font-size: 34px; margin: 0 0 8px; }
+        .aciklama { margin: 0; color: rgba(255,255,255,.8); max-width: 620px; line-height: 1.6; }
+        .kontroller, .hizli-butonlar, .kart-alt, .kart-ust, .liste-ust, .sepet-ozet { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .tema-dugmesi, .dugme, button { border: 0; border-radius: 10px; padding: 11px 15px; font-weight: 600; cursor: pointer; }
+        .tema-dugmesi { background: rgba(255,255,255,.14); color: white; }
+        .dugme, button { background: var(--vurgu); color: white; }
+        .dugme.ikincil, button.ikincil { background: var(--panel-2); color: var(--yazi); }
+        .dugme.tehlike, button.tehlike { background: #ca3f3f; }
+        .ust-arama { margin-top: 22px; display: grid; grid-template-columns: 1.4fr .8fr auto; gap: 12px; }
+        .arama-kutusu, .filtreler { background: var(--panel); border: 1px solid var(--kenar); border-radius: 18px; box-shadow: var(--golge); }
+        .arama-kutusu { padding: 14px; display: flex; gap: 12px; align-items: center; }
+        .arama-kutusu input { flex: 1; border: 0; background: transparent; color: var(--yazi); font-size: 16px; outline: none; }
+        .rozet { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.12); color: white; font-size: 14px; }
+        .icerik { display: grid; grid-template-columns: 320px 1fr; gap: 24px; margin-top: 24px; align-items: start; }
+        .filtreler { padding: 18px; position: sticky; top: 20px; }
+        .filtreler h3 { margin: 0 0 14px; }
+        .filtre-grid { display: grid; gap: 12px; }
+        input, select, textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--kenar); border-radius: 10px; background: var(--panel); color: var(--yazi); }
+        .ciftli { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .sonuclar { display: grid; gap: 18px; }
+        .liste-ust { justify-content: space-between; }
+        .kartlar { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+        .kart { background: var(--panel); border: 1px solid var(--kenar); border-radius: 18px; overflow: hidden; box-shadow: var(--golge); }
+        .kart img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: #d9dee4; }
+        .kart-icerik { padding: 16px; display: grid; gap: 12px; }
+        .fiyat { font-size: 28px; font-weight: 800; }
+        .etiketler { display: flex; gap: 8px; flex-wrap: wrap; }
+        .etiket { font-size: 13px; padding: 6px 10px; border-radius: 999px; background: var(--panel-2); color: var(--soluk); }
+        .kart-alt { justify-content: space-between; }
+        .kart-alt form { margin: 0; }
+        .kart p { margin: 0; color: var(--soluk); line-height: 1.55; }
+        .bos { padding: 40px; border-radius: 18px; background: var(--panel); border: 1px dashed var(--kenar); text-align: center; color: var(--soluk); }
+        @media (max-width: 960px) {
+            .icerik { grid-template-columns: 1fr; }
+            .ust-arama { grid-template-columns: 1fr; }
+            .hero-ust { flex-direction: column; }
+            .filtreler { position: static; }
+        }
+    </style>
+</head>
+<body>
+<div class="kapsayici">
+    <section class="hero">
+        <div class="hero-ust">
+            <div>
+                <h1 class="marka">BisiPazar</h1>
+                <p class="aciklama">Aynı ekranda arama, detaylı filtreleme, ilan yönetimi ve sepet akışı. İlandan satıcıya doğrudan ulaş, fiyatları karşılaştır ve ilgini çeken bisikletleri kaybetme.</p>
+            </div>
+            <div class="kontroller">
+                <button type="button" id="temaDegistir" class="tema-dugmesi">Tema</button>
+                <a class="dugme ikincil" th:href="@{/sepet}">Sepet <span th:text="${sepetAdedi}">0</span></a>
+                <a class="dugme ikincil" th:if="${girisYapmisMi}" th:href="@{/ilanlarim}">İlanlarım</a>
+                <a class="dugme" th:if="${girisYapmisMi}" th:href="@{/ilan/ekle}">Ilan Ekle</a>
+                <a class="dugme ikincil" th:if="${!girisYapmisMi}" th:href="@{/giris}">Giriş</a>
+                <a class="dugme" th:if="${!girisYapmisMi}" th:href="@{/kayit}">Kayıt Ol</a>
+                <form th:if="${girisYapmisMi}" th:action="@{/logout}" method="post">
+                    <button type="submit" class="ikincil">Çıkış</button>
+                </form>
+            </div>
+        </div>
+
+        <form th:action="@{/}" method="get" class="ust-arama">
+            <div class="arama-kutusu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" name="aramaMetni" th:value="${aramaMetni}" placeholder="Ürün adına göre ara">
+            </div>
+            <select name="kategori">
+                <option value="">Tüm kategoriler</option>
+                <option th:each="secenek : ${kategoriler}" th:value="${secenek}" th:text="${secenek}" th:selected="${kategori == secenek}"></option>
+            </select>
+            <button type="submit">Ara ve Filtrele</button>
+        </form>
+    </section>
+
+    <div class="icerik">
+        <aside class="filtreler">
+            <h3>Gelişmiş Filtreler</h3>
+            <form th:action="@{/}" method="get" class="filtre-grid">
+                <input type="hidden" name="aramaMetni" th:value="${aramaMetni}">
+                <div class="ciftli">
+                    <input type="number" step="0.01" name="minFiyat" th:value="${minFiyat}" placeholder="Min fiyat">
+                    <input type="number" step="0.01" name="maxFiyat" th:value="${maxFiyat}" placeholder="Max fiyat">
+                </div>
+                <select name="kategori">
+                    <option value="">Kategori</option>
+                    <option th:each="secenek : ${kategoriler}" th:value="${secenek}" th:text="${secenek}" th:selected="${kategori == secenek}"></option>
+                </select>
+                <select name="marka">
+                    <option value="">Marka</option>
+                    <option th:each="secenek : ${markalar}" th:value="${secenek}" th:text="${secenek}" th:selected="${marka == secenek}"></option>
+                </select>
+                <select name="renk">
+                    <option value="">Renk</option>
+                    <option th:each="secenek : ${renkler}" th:value="${secenek}" th:text="${secenek}" th:selected="${renk == secenek}"></option>
+                </select>
+                <div class="ciftli">
+                    <input type="number" name="minYil" th:value="${minYil}" placeholder="Min yıl">
+                    <input type="number" name="maxYil" th:value="${maxYil}" placeholder="Max yıl">
+                </div>
+                <div class="ciftli">
+                    <input type="number" name="minVites" th:value="${minVites}" placeholder="Min vites">
+                    <input type="number" name="maxVites" th:value="${maxVites}" placeholder="Max vites">
+                </div>
+                <select name="durum">
+                    <option value="">Durum</option>
+                    <option th:each="secenek : ${durumlar}" th:value="${secenek}" th:text="${secenek}" th:selected="${durum == secenek}"></option>
+                </select>
+                <div class="hizli-butonlar">
+                    <button type="submit">Uygula</button>
+                    <a class="dugme ikincil" th:href="@{/}">Temizle</a>
+                </div>
+            </form>
+        </aside>
+
+        <section class="sonuclar">
+            <div class="liste-ust">
+                <div>
+                    <h2 style="margin:0;">Öne Çıkan İlanlar</h2>
+                    <p style="margin:6px 0 0; color:var(--soluk);"><span th:text="${#lists.size(ilanlar)}">0</span> sonuç bulundu</p>
+                </div>
+                <div class="sepet-ozet" th:if="${girisYapmisMi and kullanici != null}">
+                    <span class="etiket" th:text="${kullanici.ad}">Kullanıcı</span>
+                    <span class="etiket" th:text="${kullanici.eposta}">eposta</span>
+                </div>
+            </div>
+
+            <div class="kartlar" th:if="${!#lists.isEmpty(ilanlar)}">
+                <article class="kart" th:each="ilan : ${ilanlar}">
+                    <img th:src="${ilan.resimUrl != null ? ilan.resimUrl : 'https://placehold.co/800x600?text=Bisiklet'}" alt="Bisiklet görseli">
+                    <div class="kart-icerik">
+                        <div class="kart-ust">
+                            <div style="flex:1;">
+                                <h3 style="margin:0 0 6px;" th:text="${ilan.baslik}">Başlık</h3>
+                                <p th:text="${ilan.satici.ad + '  |  ' + ilan.marka}">Satıcı</p>
+                            </div>
+                            <div class="fiyat"><span th:text="${#numbers.formatDecimal(ilan.fiyat, 1, 'POINT', 0, 'COMMA')}">0</span> TL</div>
+                        </div>
+                        <div class="etiketler">
+                            <span class="etiket" th:text="${ilan.kategori}">Kategori</span>
+                            <span class="etiket" th:text="${ilan.renk}">Renk</span>
+                            <span class="etiket" th:text="${ilan.modelYili + ' model'}">Model</span>
+                            <span class="etiket" th:text="${ilan.vitesSayisi + ' vites'}">Vites</span>
+                            <span class="etiket" th:text="${ilan.durum}">Durum</span>
+                        </div>
+                        <p th:text="${#strings.abbreviate(ilan.aciklama, 135)}">Açıklama</p>
+                        <div class="kart-alt">
+                            <a class="dugme ikincil" th:href="@{/ilanlar/{id}(id=${ilan.id})}">Detay</a>
+                            <div class="hizli-butonlar">
+                                <a class="dugme ikincil" th:if="${girisYapmisMi and kullanici != null and ilan.satici.id == kullanici.id}" th:href="@{/ilan/duzenle/{id}(id=${ilan.id})}">Düzenle</a>
+                                <form th:if="${girisYapmisMi and !#lists.contains(sepettekiIlanIdleri, ilan.id)}" th:action="@{/sepet/ekle/{ilanId}(ilanId=${ilan.id})}" method="post">
+                                    <button type="submit">Sepete Ekle</button>
+                                </form>
+                                <form th:if="${girisYapmisMi and #lists.contains(sepettekiIlanIdleri, ilan.id)}" th:action="@{/sepet/kaldir/{ilanId}(ilanId=${ilan.id})}" method="post">
+                                    <button type="submit" class="ikincil">Sepetten Kaldır</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="bos" th:if="${#lists.isEmpty(ilanlar)}">
+                Filtrelere uygun ilan bulunamadı.
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const temaAnahtari = "bisi-tema";
+    const kayitliTema = localStorage.getItem(temaAnahtari);
+    if (kayitliTema === "koyu") {
+        document.body.classList.add("koyu");
+    }
+    document.getElementById("temaDegistir").addEventListener("click", function () {
+        document.body.classList.toggle("koyu");
+        localStorage.setItem(temaAnahtari, document.body.classList.contains("koyu") ? "koyu" : "açık");
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; }
+        .kutu { max-width: 420px; margin: 80px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        input, button { width: 100%; padding: 10px; margin-top: 12px; box-sizing: border-box; }
+        button { background: #1d6f42; color: white; border: 0; border-radius: 6px; }
+        a { color: #1d6f42; }
+    </style>
+</head>
+<body>
+<div class="kutu">
+    <h1>Giriş Yap</h1>
+    <div th:if="${param.error}">
+        <p style="color:red;">E-posta veya şifre hatalı.</p>
+    </div>
+    <div th:if="${param.logout}">
+        <p>Çıkış yapıldı.</p>
+    </div>
+    <form th:action="@{/giris}" method="post">
+        <input type="email" name="username" placeholder="E-posta" required>
+        <input type="password" name="password" placeholder="Şifre" required>
+        <button type="submit">Giriş</button>
+    </form>
+    <p>Hesabın yok mu? <a th:href="@{/kayit}">Kayıt ol</a></p>
+</div>
+</body>
+</html>

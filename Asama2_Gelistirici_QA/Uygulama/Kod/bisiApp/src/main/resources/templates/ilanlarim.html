@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlanlarım</title>
+    <style>
+        body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f3f5f7; color: #172026; }
+        .kapsayici { max-width: 1180px; margin: 0 auto; padding: 28px; }
+        .panel { background: white; border-radius: 20px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08); padding: 24px; }
+        .liste { display: grid; gap: 16px; }
+        .satir { display: grid; grid-template-columns: 120px 1fr auto; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid #eef2f6; }
+        .satir:last-child { border-bottom: 0; }
+        img { width: 120px; height: 88px; object-fit: cover; border-radius: 12px; background: #d9dee4; }
+        .dugme, button { border: 0; border-radius: 10px; padding: 11px 15px; font-weight: 700; cursor: pointer; background: #1d8f5a; color: white; }
+        .ikincil { background: #ecf1f4; color: #172026; }
+        .tehlike { background: #ca3f3f; }
+        form { margin: 0; }
+        @media (max-width: 800px) { .satir { grid-template-columns: 1fr; } img { width: 100%; height: 220px; } }
+    </style>
+</head>
+<body>
+<div class="kapsayici">
+    <p><a th:href="@{/}" style="color:#1d8f5a;">Ana sayfaya dön</a></p>
+    <section class="panel">
+        <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:center;">
+            <div>
+                <h1 style="margin:0;">İlanlarım</h1>
+                <p style="margin:8px 0 0; color:#637381;" th:text="${kullanici.ad + ' için oluşturulan ilanlar'}">İlanlar</p>
+            </div>
+            <a class="dugme" th:href="@{/ilan/ekle}">Yeni İlan</a>
+        </div>
+        <div class="liste" th:if="${!#lists.isEmpty(ilanlar)}">
+            <div class="satir" th:each="ilan : ${ilanlar}">
+                <img th:src="${ilan.resimUrl != null ? ilan.resimUrl : 'https://placehold.co/400x300?text=Bisiklet'}" alt="Bisiklet">
+                <div>
+                    <h3 style="margin:0 0 8px;" th:text="${ilan.baslik}">Başlık</h3>
+                    <p style="margin:0; color:#637381;" th:text="${#numbers.formatDecimal(ilan.fiyat, 1, 'POINT', 0, 'COMMA') + ' TL | ' + ilan.marka + ' | ' + ilan.modelYili + ' | ' + ilan.durum}">Detay</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a class="dugme ikincil" th:href="@{/ilanlar/{id}(id=${ilan.id})}">Detay</a>
+                    <a class="dugme" th:href="@{/ilan/duzenle/{id}(id=${ilan.id})}">Düzenle</a>
+                    <form th:action="@{/ilan/sil/{id}(id=${ilan.id})}" method="post">
+                        <button type="submit" class="tehlike">Sil</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <p th:if="${#lists.isEmpty(ilanlar)}" style="color:#637381;">Henüz ilan eklenmemiş.</p>
+    </section>
+</div>
+</body>
+</html>

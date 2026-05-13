@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Ol</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; }
+        .kutu { max-width: 460px; margin: 60px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        input, button { width: 100%; padding: 10px; margin-top: 12px; box-sizing: border-box; }
+        button { background: #1d6f42; color: white; border: 0; border-radius: 6px; }
+    </style>
+</head>
+<body>
+<div class="kutu">
+    <h1>Kayıt Ol</h1>
+    <p th:if="${hata}" th:text="${hata}" style="color:red;"></p>
+    <form th:action="@{/kayit}" th:object="${kullanici}" method="post">
+        <input th:field="*{ad}" placeholder="Ad Soyad" required>
+        <input th:field="*{eposta}" type="email" placeholder="E-posta" required>
+        <input th:field="*{telefon}" placeholder="Telefon" required>
+        <input th:field="*{sifre}" type="password" placeholder="Şifre" required>
+        <button type="submit">Kayıt Ol</button>
+    </form>
+</div>
+</body>
+</html>

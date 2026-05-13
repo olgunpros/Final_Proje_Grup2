@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlan Detayı</title>
+    <style>
+        body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f3f5f7; color: #172026; }
+        .kapsayici { max-width: 1180px; margin: 0 auto; padding: 28px; }
+        .panel { background: white; border-radius: 20px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08); overflow: hidden; }
+        .ust { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; }
+        img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; display: block; background: #d9dee4; }
+        .icerik { padding: 28px; display: grid; gap: 18px; }
+        .satir, .etiketler, .eylemler { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .fiyat { font-size: 34px; font-weight: 800; color: #146c43; }
+        .etiket { padding: 7px 11px; border-radius: 999px; background: #eef2f6; color: #51606d; font-size: 14px; }
+        .iletisim { background: #f8fbf9; border: 1px solid #dfe8e2; border-radius: 16px; padding: 18px; }
+        .dugme, button { border: 0; border-radius: 10px; padding: 11px 15px; font-weight: 600; cursor: pointer; background: #1d8f5a; color: white; }
+        .ikincil { background: #ecf1f4; color: #172026; }
+        .tehlike { background: #ca3f3f; }
+        form { margin: 0; }
+        @media (max-width: 900px) { .ust { grid-template-columns: 1fr; } img { min-height: 260px; } }
+    </style>
+</head>
+<body>
+<div class="kapsayici">
+    <p><a th:href="@{/}" style="color:#1d8f5a;">Ana sayfaya dön</a></p>
+    <section class="panel">
+        <div class="ust">
+            <img th:src="${ilan.resimUrl != null ? ilan.resimUrl : 'https://placehold.co/1000x700?text=Bisiklet'}" alt="Bisiklet görseli">
+            <div class="icerik">
+                <div>
+                    <h1 style="margin:0 0 10px;" th:text="${ilan.baslik}">Başlık</h1>
+                    <div class="fiyat"><span th:text="${#numbers.formatDecimal(ilan.fiyat, 1, 'POINT', 0, 'COMMA')}">0</span> TL</div>
+                </div>
+
+                <div class="etiketler">
+                    <span class="etiket" th:text="${ilan.kategori}">Kategori</span>
+                    <span class="etiket" th:text="${ilan.marka}">Marka</span>
+                    <span class="etiket" th:text="${ilan.renk}">Renk</span>
+                    <span class="etiket" th:text="${ilan.modelYili + ' model'}">Yıl</span>
+                    <span class="etiket" th:text="${ilan.vitesSayisi + ' vites'}">Vites</span>
+                    <span class="etiket" th:text="${ilan.durum}">Durum</span>
+                </div>
+
+                <p style="margin:0; line-height:1.7;" th:text="${ilan.aciklama}">Açıklama</p>
+
+                <div class="iletisim">
+                    <h3 style="margin-top:0;">Satıcı İletişim Bilgileri</h3>
+                    <div class="satir"><strong>Ad:</strong> <span th:text="${ilan.satici.ad}">Ad</span></div>
+                    <div class="satir"><strong>Telefon:</strong> <span th:text="${ilan.satici.telefon}">Telefon</span></div>
+                    <div class="satir"><strong>E-posta:</strong> <span th:text="${ilan.satici.eposta}">E-posta</span></div>
+                </div>
+
+                <div class="eylemler">
+                    <form th:if="${!sahibiMi and !sepetteMi}" th:action="@{/sepet/ekle/{ilanId}(ilanId=${ilan.id})}" method="post">
+                        <button type="submit">Sepete Ekle</button>
+                    </form>
+                    <form th:if="${!sahibiMi and sepetteMi}" th:action="@{/sepet/kaldir/{ilanId}(ilanId=${ilan.id})}" method="post">
+                        <button type="submit" class="ikincil">Sepetten Kaldır</button>
+                    </form>
+                    <a th:if="${sahibiMi}" class="dugme ikincil" th:href="@{/ilan/duzenle/{id}(id=${ilan.id})}">İlanı Düzenle</a>
+                    <form th:if="${sahibiMi}" th:action="@{/ilan/sil/{id}(id=${ilan.id})}" method="post">
+                        <button type="submit" class="tehlike">İlanı Sil</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
